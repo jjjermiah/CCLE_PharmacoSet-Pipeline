@@ -1,0 +1,37 @@
+# Configure relative paths for script execution
+rawdataDir: rawdata
+procdataDir: procdata
+metadataDir: metadata
+resultsDir: results
+scriptsDir: scripts
+logsDir: logs
+
+# Configure Data URLs
+metadata:
+  sampleAnnotation: "https://data.broadinstitute.org/ccle/Cell_lines_annotations_20181226.txt"
+  treatmentAnnotation: "https://data.broadinstitute.org/ccle_legacy_data/pharmacological_profiling/CCLE_NP24.2009_profiling_2012.02.20.csv"
+
+# Configure Gencode genome parameters
+ccle_gencode_ver: 19
+pharmacogx_gencode_ver: 40
+gencode_reference: GRCh37
+
+molecularProfiles:
+  expression:
+    file_rsem-genes_tpm: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz"
+    file_rsem-transcripts_tpm: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz"
+    file_genes_counts: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_genes_counts_20180929.gct.gz"
+  mutation:
+    file_oncomapAssay: "https://data.broadinstitute.org/ccle_legacy_data/oncomap_mutations/CCLE_Oncomap3_Assays_2012-04-09.csv"
+    file_oncomap: "https://data.broadinstitute.org/ccle_legacy_data/oncomap_mutations/CCLE_Oncomap3_2012-04-09.maf"
+  cnv:
+    copynumber_byGene: 
+      url: "https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_copynumber_byGene_2013-12-03.txt.gz"
+    SNParrays:
+      url1: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_1.tar.gz
+      url2: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_2.tar.gz
+      url3: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_3.tar.gz
+      url4: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_4.tar.gz
+  methylation:
+    RBBS_TSS1kb:
+      url: "https://data.broadinstitute.org/ccle/CCLE_RRBS_TSS1kb_20181022.txt.gz"

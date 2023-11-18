@@ -1,0 +1,82 @@
+# import HTTP remote provider
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+import json
+import pandas as pd
+
+HTTP = HTTPRemoteProvider()
+
+configfile: "workflow/config/config.yaml"
+
+# path configuration
+rawdata = Path(config["rawdataDir"])
+metadata = Path(config["metadataDir"])
+procdata = Path(config["procdataDir"])
+results = Path(config["resultsDir"])
+scripts = Path(config["scriptsDir"])
+
+
+include: "rules/downloadData.smk"
+
+
+
+rule preprocessCNV:
+    input:
+        cnv=rawdata / "cnv/CCLE_copynumber_byGene_2013-12-03.txt.gz",
+        ccle_gencode=gencodeAnnotation(
+            dirPath=metadata,
+            ref_build=config["gencode_reference"],
+            gencode_ver=config["ccle_gencode_ver"],
+            species="human",
+        ),
+        pgx_gencode=gencodeAnnotation(
+            dirPath=metadata,
+            ref_build=config["gencode_reference"],
+            gencode_ver=config["pharmacogx_gencode_ver"],
+            species="human",
+        ),
+    output:
+        preprocessedCNV = procdata / "preprocessedCNV.qs"
+    threads:
+        4
+    script:
+        scripts / "preprocessCNV.R"
+
+
+# TODO::SPLIT THESE TWO RULES INTO TWO RULES
+rule makeExpressionSummarizedExperiment:
+    input:  
+        preprocessedExpression = procdata / "preprocessedExpression.qs",
+    output:
+        procssedExpressionSE = procdata / "processedExpressionSE.qs"
+    threads:
+        4
+    script:
+        scripts / "makeExpressionSummarizedExperiment.R"
+
+
+
+# TODO::FIGURE OUT WHAT WE NEED WITH PGX_GENCODE
+rule preprocessExpression:
+    input:
+        genes_tpm=rawdata / "expression/CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz",
+        transcripts_tpm=rawdata / "expression/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
+        ccle_gencode=gencodeAnnotation(
+            dirPath=metadata,
+            ref_build=config["gencode_reference"],
+            gencode_ver=config["ccle_gencode_ver"],
+            species="human",
+        ),
+        pgx_gencode=gencodeAnnotation(
+            dirPath=metadata,
+            ref_build=config["gencode_reference"],
+            gencode_ver=config["pharmacogx_gencode_ver"],
+            species="human",
+        ),
+    output:
+        preprocessedExpression = procdata / "preprocessedExpression.qs"
+    threads:
+        4
+    script:
+        scripts / "preprocessExpression.R"
+
+
