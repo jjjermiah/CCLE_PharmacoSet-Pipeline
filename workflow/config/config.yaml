@@ -13,7 +13,6 @@ metadata:
 
 # Configure Gencode genome parameters
 ccle_gencode_ver: 19
-pharmacogx_gencode_ver: 40
 gencode_reference: GRCh37
 
 molecularProfiles:
