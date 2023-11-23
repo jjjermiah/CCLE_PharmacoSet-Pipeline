@@ -33,8 +33,6 @@ genes_tpm_GeneAnnotations <-
 transcripts_tpm_GeneAnnotations <- 
     transcripts_tpm[, .(published.gene_id = gene_id, transcript_id = transcript_id)]
 
-
-
 ### ------------------- Load GENCODE ------------------- ####
 print("Loading GENCODE")
 dsGencode <- rtracklayer::import(INPUT$ccle_gencode)

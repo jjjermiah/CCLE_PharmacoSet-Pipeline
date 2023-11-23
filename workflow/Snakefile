@@ -16,8 +16,7 @@ scripts = Path(config["scriptsDir"])
 
 
 include: "rules/downloadData.smk"
-
-
+include: "rules/downloadGencode.smk"
 
 rule preprocessCNV:
     input:
@@ -28,12 +27,6 @@ rule preprocessCNV:
             gencode_ver=config["ccle_gencode_ver"],
             species="human",
         ),
-        pgx_gencode=gencodeAnnotation(
-            dirPath=metadata,
-            ref_build=config["gencode_reference"],
-            gencode_ver=config["pharmacogx_gencode_ver"],
-            species="human",
-        ),
     output:
         preprocessedCNV = procdata / "preprocessedCNV.qs"
     threads:
@@ -41,6 +34,26 @@ rule preprocessCNV:
     script:
         scripts / "preprocessCNV.R"
 
+
+rule make_ExpressionGenes_SE:
+    input:
+        preprocessedExpression = procdata / "preprocessedExpression.qs",
+    output:
+        procssedExpressionGenesSE = procdata / "processedExpressionGenesSE.qs"
+    threads:
+        4
+    script:
+        scripts / "make_ExpressionGenes_SE.R"
+
+rule make_ExpressionTranscripts_SE:
+    input:
+        preprocessedExpression = procdata / "preprocessedExpression.qs",
+    output:
+        procssedExpressionTranscriptsSE = procdata / "processedExpressionTranscriptsSE.qs"
+    threads:
+        4
+    script:
+        scripts / "make_ExpressionTranscripts_SE.R"
 
 # TODO::SPLIT THESE TWO RULES INTO TWO RULES
 rule makeExpressionSummarizedExperiment:
@@ -54,8 +67,6 @@ rule makeExpressionSummarizedExperiment:
         scripts / "makeExpressionSummarizedExperiment.R"
 
 
-
-# TODO::FIGURE OUT WHAT WE NEED WITH PGX_GENCODE
 rule preprocessExpression:
     input:
         genes_tpm=rawdata / "expression/CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz",
@@ -64,12 +75,6 @@ rule preprocessExpression:
             dirPath=metadata,
             ref_build=config["gencode_reference"],
             gencode_ver=config["ccle_gencode_ver"],
-            species="human",
-        ),
-        pgx_gencode=gencodeAnnotation(
-            dirPath=metadata,
-            ref_build=config["gencode_reference"],
-            gencode_ver=config["pharmacogx_gencode_ver"],
             species="human",
         ),
     output:
