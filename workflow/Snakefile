@@ -1,9 +1,7 @@
 # import HTTP remote provider
-from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
 import json
 import pandas as pd
-
-HTTP = HTTPRemoteProvider()
 
 configfile: "workflow/config/config.yaml"
 
@@ -16,7 +14,26 @@ scripts = Path(config["scriptsDir"])
 
 
 include: "rules/downloadData.smk"
-include: "rules/downloadGencode.smk"
+include: "/home/bioinf/bhklab/jermiah/psets/PharmacoSet-Pipelines/workflow/rules/downloadGencode.smk"
+# include: "rules/downloadGencode.smk"
+
+rule build_PharmacoSet:
+    input:
+        results / "processedExpressionGenesSE.qs",
+        results / "processedExpressionTranscriptsSE.qs",
+        results / "processedExpressionCNVSE.qs",
+        rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
+        rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
+        rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
+
+
+
+rule make_ExpressionCNV_SE:
+    input:
+        procdata / "preprocessedCNV.qs",
+    output:
+        results / "processedExpressionCNVSE.qs"
+    
 
 rule preprocessCNV:
     input:
@@ -25,8 +42,7 @@ rule preprocessCNV:
             dirPath=metadata,
             ref_build=config["gencode_reference"],
             gencode_ver=config["ccle_gencode_ver"],
-            species="human",
-        ),
+            species="human"),
     output:
         preprocessedCNV = procdata / "preprocessedCNV.qs"
     threads:
@@ -37,9 +53,9 @@ rule preprocessCNV:
 
 rule make_ExpressionGenes_SE:
     input:
-        preprocessedExpression = procdata / "preprocessedExpression.qs",
+        preprocessedExpression = procdata / "preprocessedExpressionGenes.qs",
     output:
-        procssedExpressionGenesSE = procdata / "processedExpressionGenesSE.qs"
+        processedExpressionGenesSE = results / "processedExpressionGenesSE.qs"
     threads:
         4
     script:
@@ -47,41 +63,42 @@ rule make_ExpressionGenes_SE:
 
 rule make_ExpressionTranscripts_SE:
     input:
-        preprocessedExpression = procdata / "preprocessedExpression.qs",
+        preprocessedExpression = procdata / "preprocessedExpressionTranscripts.qs",
     output:
-        procssedExpressionTranscriptsSE = procdata / "processedExpressionTranscriptsSE.qs"
+        processedExpressionTranscriptsSE = results / "processedExpressionTranscriptsSE.qs"
     threads:
         4
     script:
         scripts / "make_ExpressionTranscripts_SE.R"
 
-# TODO::SPLIT THESE TWO RULES INTO TWO RULES
-rule makeExpressionSummarizedExperiment:
-    input:  
-        preprocessedExpression = procdata / "preprocessedExpression.qs",
-    output:
-        procssedExpressionSE = procdata / "processedExpressionSE.qs"
-    threads:
-        4
-    script:
-        scripts / "makeExpressionSummarizedExperiment.R"
 
-
-rule preprocessExpression:
+rule preprocessExpressionTranscripts:
     input:
-        genes_tpm=rawdata / "expression/CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz",
-        transcripts_tpm=rawdata / "expression/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
+        transcripts = rawdata / "expression/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt",
         ccle_gencode=gencodeAnnotation(
             dirPath=metadata,
             ref_build=config["gencode_reference"],
             gencode_ver=config["ccle_gencode_ver"],
-            species="human",
-        ),
+            species="human"),
     output:
-        preprocessedExpression = procdata / "preprocessedExpression.qs"
+        preprocessedExpression = procdata / "preprocessedExpressionTranscripts.qs"
     threads:
         4
     script:
-        scripts / "preprocessExpression.R"
+        scripts / "preprocessExpressionTranscripts.R"
+    
 
-
+rule preprocessExpressionGenes:
+    input:
+        genes=rawdata / "expression/CCLE_RNAseq_rsem_genes_tpm_20180929.txt",
+        ccle_gencode=gencodeAnnotation(
+            dirPath=metadata,
+            ref_build=config["gencode_reference"],
+            gencode_ver=config["ccle_gencode_ver"],
+            species="human"),
+    output:
+        preprocessedExpression = procdata / "preprocessedExpressionGenes.qs"
+    threads:
+        4
+    script:
+        scripts / "preprocessExpressionGenes.R"
