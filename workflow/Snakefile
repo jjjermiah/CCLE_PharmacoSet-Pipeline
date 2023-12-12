@@ -13,9 +13,9 @@ include: "rules/preprocessData.smk"
 
 rule build_PharmacoSet:
     input:
-        results / "processedExpressionGenesSE.qs",
-        results / "processedExpressionTranscriptsSE.qs",
-        results / "processedCNV_SE.qs",
+        results / "data/ExpressionGenes_SE.qs",
+        results / "data/ExpressionTranscripts_SE.qs",
+        results / "data/CNV_SE.qs",
         rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
         rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
         rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
@@ -24,7 +24,7 @@ rule make_CNV_SE:
     input:
         procdata / "preprocessedCNV.qs",
     output:
-        results / "processedCNV_SE.qs"
+        results / "data/CNV_SE.qs"
     script:
         scripts / "expression/make_ExpressionCNV_SE.R"
     
@@ -32,7 +32,7 @@ rule make_ExpressionGenes_SE:
     input:
         preprocessedExpression = procdata / "preprocessedExpressionGenes.qs",
     output:
-        processedExpressionGenesSE = results / "processedExpressionGenesSE.qs"
+        processedExpressionGenesSE = results / "data/ExpressionGenes_SE.qs"
     threads:
         4
     script:
@@ -42,7 +42,7 @@ rule make_ExpressionTranscripts_SE:
     input:
         preprocessedExpression = procdata / "preprocessedExpressionTranscripts.qs",
     output:
-        processedExpressionTranscriptsSE = results / "processedExpressionTranscriptsSE.qs"
+        processedExpressionTranscriptsSE = results / "data/ExpressionTranscripts_SE.qs"
     threads:
         4
     script:

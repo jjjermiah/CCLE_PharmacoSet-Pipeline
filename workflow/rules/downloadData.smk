@@ -46,9 +46,27 @@ SNPArrays = config["molecularProfiles"]["cnv"]["SNParrays"]
 import shutil, os
 rule downloadSNPArrays:
     input:
-        arrays = [HTTP.remote(SNPArrays[url]) for url in SNPArrays.keys()]
+        arrays = [HTTP.remote(SNPArrays[url]) for url in SNPArrays.keys() if url.startswith("url")]
     output:
-        arrays=[rawdata / "cnv/snpArrays/{}".format(Path(SNPArrays[url]).name) for url in SNPArrays.keys()]
+        arrays=[rawdata / "cnv/snpArrays/{}".format(Path(SNPArrays[url]).name) for url in SNPArrays.keys() if url.startswith("url")]
     run:
         for i in range(len(input.arrays)):
             shutil.move(input.arrays[i], output.arrays[i])
+
+rule extractSNPArrays:
+    input:
+        arrays=[rawdata / "cnv/snpArrays/{}".format(Path(SNPArrays[url]).name) for url in SNPArrays.keys() if url.startswith("url")]
+    output:
+        directory=directory("rawdata/cnv/snpArrays/CEL")
+    threads:
+        4
+    shell:
+        # Run "tar -xvf array --one-top-level={output.directory} for each array
+        """
+        mkdir -p {output.directory};
+        for array in {input.arrays};
+        do
+            tar -xvf $array -C {output.directory} --strip-components=6 &
+        done
+        wait $(jobs -p)
+        """

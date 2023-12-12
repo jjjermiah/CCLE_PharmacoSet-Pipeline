@@ -33,10 +33,15 @@ molecularProfiles:
     copynumber_byGene: 
       url: "https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_copynumber_byGene_2013-12-03.txt.gz"
     SNParrays:
+      description: 
       url: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_1.tar.gz
       url2: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_2.tar.gz
       url3: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_3.tar.gz
       url4: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_4.tar.gz
+      metadata: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays.sif_2013-12-03.txt
+      annotation:
+        description: "Annotations correspond to hg18 (NCBI 36.1)"
+        bioconductorPackage: "pd.genomewidesnp.6"
   methylation:
     RBBS_TSS1kb:
       url: "https://data.broadinstitute.org/ccle/CCLE_RRBS_TSS1kb_20181022.txt.gz"

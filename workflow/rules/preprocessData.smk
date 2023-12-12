@@ -6,7 +6,7 @@ include: "/home/bioinf/bhklab/jermiah/psets/PharmacoSet-Pipelines/workflow/rules
 scripts = ".." /scripts
 rule preprocessCNV:
     input:
-        cnv=rawdata / "cnv/CCLE_copynumber_byGene_2013-12-03.txt",
+        cnv=rawdata / "cnv/CCLE_copynumber_byGene_2013---strip-components=12-03.txt",
         ccle_gencode=gencodeAnnotation(
             dirPath=metadata,
             ref_build=config["gencode_reference"],
@@ -18,6 +18,17 @@ rule preprocessCNV:
         4
     script:
         scripts / "cnv/preprocessCNV.R"
+
+rule preprocessSNPArrays:
+    input:
+        directory("rawdata/cnv/snpArrays/CEL")
+    output:
+        preprocessedSNPArrays = procdata / "preprocessedSNPArrays.qs"
+    threads:
+        4
+    script:
+        scripts / "cnv/preprocessSNPArrays.R"
+
 
 rule preprocessExpressionTranscripts:
     input:
