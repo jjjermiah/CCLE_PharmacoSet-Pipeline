@@ -1,12 +1,28 @@
 # scripts to download data
 include: "downloadData.smk"
+
+
 # scripts to download gencode data
 # TODO::find a way to incorporate this script from a github repo or something
 include: "/home/bioinf/bhklab/jermiah/psets/PharmacoSet-Pipelines/workflow/rules/downloadGencode.smk"
-scripts = ".." /scripts
+
+
+# scripts = ".." /scripts
+
+rule preprocessMetadata:
+    input:
+        sampleAnnotation = metadata / "sampleAnnotation.txt",
+        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
+    output:
+        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+    threads:
+        1
+    script:
+        scripts / "metadata/preprocessMetadata.R"
+
 rule preprocessCNV:
     input:
-        cnv=rawdata / "cnv/CCLE_copynumber_byGene_2013---strip-components=12-03.txt",
+        cnv=rawdata / "cnv/CCLE_copynumber_byGene_2013-12-03.txt",
         ccle_gencode=gencodeAnnotation(
             dirPath=metadata,
             ref_build=config["gencode_reference"],

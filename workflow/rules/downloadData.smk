@@ -1,14 +1,20 @@
+from pathlib import Path
+import shutil, os
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 HTTP = HTTPRemoteProvider()
-from pathlib import Path
 
+include: "downloadMetadata.smk"
 
 expression = config["molecularProfiles"]["expression"]
+mutation = config["molecularProfiles"]["mutation"]
+cnv = config["molecularProfiles"]["cnv"]
+SNPArrays = config["molecularProfiles"]["cnv"]["SNParrays"]
+methylation = config["molecularProfiles"]["methylation"]
 
 rule downloadExpression:
     input:
-        genes_rsem = HTTP.remote(expression["file_rsem-genes_tpm"]["url"]),
-        transcripts_rsem = HTTP.remote(expression["file_rsem-transcripts_tpm"]["url"]),
+        genes_rsem = HTTP.remote(expression["rsem-genes_tpm"]["url"]),
+        transcripts_rsem = HTTP.remote(expression["rsem-transcripts_tpm"]["url"]),
     output:
         genes_tpm=rawdata / "expression/CCLE_RNAseq_rsem_genes_tpm_20180929.txt",
         transcripts_tpm=rawdata / "expression/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt",
@@ -17,8 +23,8 @@ rule downloadExpression:
 
 rule downloadMutation:
     input:
-        oncomapAssay = HTTP.remote(config["molecularProfiles"]["mutation"]["file_oncomapAssay"]["url"]),
-        oncomap = HTTP.remote(config["molecularProfiles"]["mutation"]["file_oncomap"]["url"]),
+        oncomapAssay = HTTP.remote(mutation["oncomapAssay"]["url"]),
+        oncomap = HTTP.remote(mutation["oncomap"]["url"]),
     output:
         oncomapAssay=rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
         oncomap=rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
@@ -27,7 +33,7 @@ rule downloadMutation:
 
 rule downloadMethylation:
     input:
-        methylation = HTTP.remote(config["molecularProfiles"]["methylation"]["RBBS_TSS1kb"]["url"]),
+        methylation = HTTP.remote(methylation["RBBS_TSS1kb"]["url"]),
     output:
         methylation=rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
     shell:
@@ -36,19 +42,19 @@ rule downloadMethylation:
 
 rule downloadCNV:
     input:
-        cnv = HTTP.remote(config["molecularProfiles"]["cnv"]["copynumber_byGene"]["url"]),
+        cnv = HTTP.remote(cnv["copynumber_byGene"]["url"]),
     output:
         cnv=rawdata / "cnv/CCLE_copynumber_byGene_2013-12-03.txt",
     shell:
         "gunzip {input.cnv} -c > {output.cnv}"
 
-SNPArrays = config["molecularProfiles"]["cnv"]["SNParrays"]
-import shutil, os
 rule downloadSNPArrays:
     input:
         arrays = [HTTP.remote(SNPArrays[url]) for url in SNPArrays.keys() if url.startswith("url")]
     output:
-        arrays=[rawdata / "cnv/snpArrays/{}".format(Path(SNPArrays[url]).name) for url in SNPArrays.keys() if url.startswith("url")]
+        arrays=[
+            rawdata / "cnv/snpArrays/{}".format(Path(SNPArrays[url]).name) 
+                for url in SNPArrays.keys() if url.  startswith("url")]
     run:
         for i in range(len(input.arrays)):
             shutil.move(input.arrays[i], output.arrays[i])

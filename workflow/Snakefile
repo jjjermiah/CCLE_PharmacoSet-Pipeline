@@ -16,6 +16,8 @@ rule build_PharmacoSet:
         results / "data/ExpressionGenes_SE.qs",
         results / "data/ExpressionTranscripts_SE.qs",
         results / "data/CNV_SE.qs",
+        procdata / "annotatedSampleData.qs",
+        procdata / "annotatedTreatmentData.qs",
         rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
         rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
         rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
@@ -47,3 +49,23 @@ rule make_ExpressionTranscripts_SE:
         4
     script:
         scripts / "expression/make_ExpressionTranscripts_SE.R"
+
+rule annotateSampleData:
+    input:
+        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+    output:
+        annotatedSampleData = procdata / "annotatedSampleData.qs"
+    threads:
+        10
+    script:
+        scripts / "metadata/annotateSampleData.R"
+
+rule annotateTreatmentData:
+    input:
+        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+    output:
+        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs"
+    threads:
+        10
+    script:
+        scripts / "metadata/annotateTreatmentData.R"

@@ -17,23 +17,39 @@ gencode_reference: GRCh37
 
 molecularProfiles:
   expression:
-    file_rsem-genes_tpm: 
+    rsem-genes_tpm: 
       description: "RNA-seq gene expression data. TPM values are log2 transformed."
       url: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz"
-    file_rsem-transcripts_tpm: 
+
+    rsem-transcripts_tpm: 
+      description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz"
-    file_genes_counts: 
+
+    genes_counts: 
+      description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_genes_counts_20180929.gct.gz"
+
   mutation:
-    file_oncomapAssay: 
+    oncomapAssay: 
+      description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle_legacy_data/oncomap_mutations/CCLE_Oncomap3_Assays_2012-04-09.csv"
-    file_oncomap: 
+
+    oncomap: 
+      description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle_legacy_data/oncomap_mutations/CCLE_Oncomap3_2012-04-09.maf"
+
+  methylation:
+    RBBS_TSS1kb:
+      description: TODO::(add description)
+      url: "https://data.broadinstitute.org/ccle/CCLE_RRBS_TSS1kb_20181022.txt.gz"
+
   cnv:
     copynumber_byGene: 
+      description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_copynumber_byGene_2013-12-03.txt.gz"
+      
     SNParrays:
-      description: 
+      description: TODO::(add description)
       url: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_1.tar.gz
       url2: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_2.tar.gz
       url3: https://data.broadinstitute.org/ccle_legacy_data/dna_copy_number/CCLE_SNP.Arrays_2012-10-30_3.tar.gz
@@ -42,6 +58,4 @@ molecularProfiles:
       annotation:
         description: "Annotations correspond to hg18 (NCBI 36.1)"
         bioconductorPackage: "pd.genomewidesnp.6"
-  methylation:
-    RBBS_TSS1kb:
-      url: "https://data.broadinstitute.org/ccle/CCLE_RRBS_TSS1kb_20181022.txt.gz"
+  
