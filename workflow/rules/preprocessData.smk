@@ -7,7 +7,7 @@ include: "downloadData.smk"
 include: "/home/bioinf/bhklab/jermiah/psets/PharmacoSet-Pipelines/workflow/rules/downloadGencode.smk"
 
 
-# scripts = ".." /scripts
+scripts_ = ".." /scripts
 
 rule preprocessMetadata:
     input:
@@ -18,7 +18,7 @@ rule preprocessMetadata:
     threads:
         1
     script:
-        scripts / "metadata/preprocessMetadata.R"
+        scripts_ / "metadata/preprocessMetadata.R"
 
 rule preprocessCNV:
     input:
@@ -33,7 +33,7 @@ rule preprocessCNV:
     threads:
         4
     script:
-        scripts / "cnv/preprocessCNV.R"
+        scripts_ / "cnv/preprocessCNV.R"
 
 rule preprocessSNPArrays:
     input:
@@ -43,7 +43,7 @@ rule preprocessSNPArrays:
     threads:
         4
     script:
-        scripts / "cnv/preprocessSNPArrays.R"
+        scripts_ / "cnv/preprocessSNPArrays.R"
 
 
 rule preprocessExpressionTranscripts:
@@ -59,7 +59,7 @@ rule preprocessExpressionTranscripts:
     threads:
         4
     script:
-        scripts / "expression/preprocessExpressionTranscripts.R"
+        scripts_ / "expression/preprocessExpressionTranscripts.R"
     
 rule preprocessExpressionGenes:
     input:
@@ -74,4 +74,4 @@ rule preprocessExpressionGenes:
     threads:
         4
     script:
-        scripts / "expression/preprocessExpressionGenes.R"
+        scripts_ / "expression/preprocessExpressionGenes.R"
