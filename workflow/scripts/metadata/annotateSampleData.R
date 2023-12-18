@@ -8,10 +8,15 @@ if(exists("snakemake")){
     LOGFILE <- snakemake@log[[1]]
     save.image()
 }
+# 0. 
+# Setup
 library(data.table)
-# Set up logging
 logger <- log4r::logger(
-    appenders = log4r::file_appender(LOGFILE, append = TRUE))
+    appenders = list(
+        log4r::file_appender(LOGFILE, append = TRUE),
+        log4r::console_appender()
+    )
+)
 
 # Modify the BiocParallel::MulticoreParam to use the logger
 BPPARAM = BiocParallel::MulticoreParam(
@@ -22,32 +27,25 @@ log4r::info(logger,"Reading in mapped sample data")
 mappedSampleData <- qs::qread(INPUT[["mappedSampleData"]])
 
 # 2.
-data <- BiocParallel::bplapply(
-    mappedSampleData[,Cellosaurus.Accession],
-    function(x){
-        AnnotationGx::searchCellosaurusAPI(
-            query=x,
-            from="ac",
-            format="tsv",
-            numResults=1,
-            returnURL=F
-        )
-    },
-    BPPARAM = BPPARAM
+log4r::info(logger,"Annotating sample data")
+data <- AnnotationGx::mapCellosaursAccessionsToFields(
+    mappedSampleData$Cellosaurus.Accession, 
+    fields = c("id", "ac", "sy", "ca", "sx", "ag", "di", "derived-from-site", "misspelling"),
 )
 
-# convert to data.table
-data <- data.table::rbindlist(data, fill = TRUE)[, queryField := NULL]
-names(data) <- paste0("Cellosaurus.", names(data))
+save.image()
+log4r::info(logger,"Finished annotating sample data")
 
-# remove duplicates
+names(data) <- paste0("Cellosaurus.", names(data))
 data <- data[!duplicated(Cellosaurus.Accession),]
 
 # 3.
+log4r::info(logger,"Removing duplicates")
 sampleData <- merge(
     mappedSampleData, data, by = "Cellosaurus.Accession", all = TRUE)
             
 
 # 4.
+log4r::info(logger,"Saving annotated sample data")
 qs::qsave(sampleData, OUTPUT[["annotatedSampleData"]])
 

@@ -9,3 +9,4 @@ references/*
 test.idx
 trash/
 .RData
+*.RData

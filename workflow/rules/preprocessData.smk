@@ -9,16 +9,7 @@ include: "/home/bioinf/bhklab/jermiah/psets/PharmacoSet-Pipelines/workflow/rules
 
 scripts_ = ".." /scripts
 
-rule preprocessMetadata:
-    input:
-        sampleAnnotation = metadata / "sampleAnnotation.txt",
-        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
-    output:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
-    threads:
-        1
-    script:
-        scripts_ / "metadata/preprocessMetadata.R"
+
 
 rule preprocessCNV:
     input:
