@@ -15,7 +15,7 @@ rule build_PharmacoSet:
     input:
         results / "data/ExpressionGenes_SE.qs",
         results / "data/ExpressionTranscripts_SE.qs",
-        results / "data/CNV_SE.qs",
+        # results / "data/CNV_SE.qs",
         procdata / "annotatedSampleData.qs",
         procdata / "annotatedTreatmentData.qs",
         rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
@@ -52,13 +52,46 @@ rule make_ExpressionTranscripts_SE:
 
 rule annotateSampleData:
     input:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+        mappedSampleData = procdata / "mappedSampleData.qs",
+        # cellosaurusObject = "metadata/cellosaurus.qs"
     output:
-        annotatedSampleData = procdata / "annotatedSampleData.qs"
+        annotatedSampleData = touch(procdata / "annotatedSampleData.qs")
+    log:
+        "logs/metadata/annotateSampleData.log"
     threads:
-        10
+        4
     script:
         scripts / "metadata/annotateSampleData.R"
+
+
+rule mapSampleNamesToCellosaurusAccessionID:
+    input:
+        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+    output:
+        mappedSampleData = procdata / "mappedSampleData.qs"
+    log:
+        "logs/metadata/mapSampleNamesToCellosaurusAccessionID.log"
+    threads:
+        4
+    script:
+        scripts / "metadata/mapSampleNamesToCellosaurusAccessionID.R"
+
+rule preprocessCellosaurusData:
+    output:
+        cellosaurusObject = "metadata/cellosaurus.qs",
+    conda:
+        "envs/annotationgx.yaml",
+    log:
+        "logs/metadata/preprocessCellosaurusData.log"
+    shell:
+        """
+        Rscript -e \
+        'qs::qsave(\
+            AnnotationGx::getCompleteCellosaurusObject(), 
+            file = "{output.cellosaurusObject}")' \
+        > {log} 2>&1
+        """
+
 
 rule annotateTreatmentData:
     input:

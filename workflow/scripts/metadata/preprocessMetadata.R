@@ -1,4 +1,3 @@
-
 ## ------------------- Parse Snakemake Object ------------------- ##
 if(exists("snakemake")){
     INPUT <- snakemake@input
@@ -9,6 +8,7 @@ if(exists("snakemake")){
     save.image()
 }
 
+library(data.table)
 # source the helper function file
 snakemake@source("clean_helpers.R")
 
@@ -46,7 +46,7 @@ sampleDT <-
         )
     ]
 
-sampleDT <- sampleDT[, CCLE.cleanedSampleName := cleanCharacterStrings(CCLE.sampleID)]
+sampleDT <- sampleDT[, CCLE.cleanedSampleName := cleanCharacterStrings(CCLE.name)]
 
 ## 2.0 clean treatment annotation data
 ## -------------------------------

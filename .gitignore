@@ -8,3 +8,4 @@ references/*
 *.tar.gz
 test.idx
 trash/
+.RData
