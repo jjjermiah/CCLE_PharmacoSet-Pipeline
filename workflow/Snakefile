@@ -1,9 +1,3 @@
-# import HTTP remote provider
-from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
-import json
-import pandas as pd
-
-HTTP = HTTPRemoteProvider()
 
 configfile: "workflow/config/config.yaml"
 
@@ -15,68 +9,43 @@ results = Path(config["resultsDir"])
 scripts = Path(config["scriptsDir"])
 
 
-include: "rules/downloadData.smk"
-
-
-
-rule preprocessCNV:
+rule build_PharmacoSet:
     input:
-        cnv=rawdata / "cnv/CCLE_copynumber_byGene_2013-12-03.txt.gz",
-        ccle_gencode=gencodeAnnotation(
-            dirPath=metadata,
-            ref_build=config["gencode_reference"],
-            gencode_ver=config["ccle_gencode_ver"],
-            species="human",
-        ),
-        pgx_gencode=gencodeAnnotation(
-            dirPath=metadata,
-            ref_build=config["gencode_reference"],
-            gencode_ver=config["pharmacogx_gencode_ver"],
-            species="human",
-        ),
-    output:
-        preprocessedCNV = procdata / "preprocessedCNV.qs"
-    threads:
-        4
-    script:
-        scripts / "preprocessCNV.R"
+        results / "data/ExpressionGenes_SE.qs",
+        results / "data/ExpressionTranscripts_SE.qs",
+        procdata / "annotatedSampleData.qs",
+        procdata / "annotatedTreatmentData.qs",
+        rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
+        rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
+        rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
 
-
-# TODO::SPLIT THESE TWO RULES INTO TWO RULES
-rule makeExpressionSummarizedExperiment:
-    input:  
-        preprocessedExpression = procdata / "preprocessedExpression.qs",
-    output:
-        procssedExpressionSE = procdata / "processedExpressionSE.qs"
-    threads:
-        4
-    script:
-        scripts / "makeExpressionSummarizedExperiment.R"
-
-
-
-# TODO::FIGURE OUT WHAT WE NEED WITH PGX_GENCODE
-rule preprocessExpression:
+rule make_CNV_SE:
     input:
-        genes_tpm=rawdata / "expression/CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz",
-        transcripts_tpm=rawdata / "expression/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
-        ccle_gencode=gencodeAnnotation(
-            dirPath=metadata,
-            ref_build=config["gencode_reference"],
-            gencode_ver=config["ccle_gencode_ver"],
-            species="human",
-        ),
-        pgx_gencode=gencodeAnnotation(
-            dirPath=metadata,
-            ref_build=config["gencode_reference"],
-            gencode_ver=config["pharmacogx_gencode_ver"],
-            species="human",
-        ),
+        procdata / "preprocessedCNV.qs",
     output:
-        preprocessedExpression = procdata / "preprocessedExpression.qs"
+        results / "data/CNV_SE.qs"
+    script:
+        scripts / "expression/make_ExpressionCNV_SE.R"
+    
+rule make_ExpressionGenes_SE:
+    input:
+        preprocessedExpression = procdata / "preprocessedExpressionGenes.qs",
+    output:
+        processedExpressionGenesSE = results / "data/ExpressionGenes_SE.qs"
     threads:
         4
     script:
-        scripts / "preprocessExpression.R"
+        scripts / "expression/make_ExpressionGenes_SE.R"
 
+rule make_ExpressionTranscripts_SE:
+    input:
+        preprocessedExpression = procdata / "preprocessedExpressionTranscripts.qs",
+    output:
+        processedExpressionTranscriptsSE = results / "data/ExpressionTranscripts_SE.qs"
+    threads:
+        4
+    script:
+        scripts / "expression/make_ExpressionTranscripts_SE.R"
 
+include: "rules/preprocessData.smk"
+include: "rules/processMetadata.smk"

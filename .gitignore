@@ -3,3 +3,10 @@ procdata/*
 metadata/*
 results/*
 .snakemake/*
+logs/*
+references/*
+*.tar.gz
+test.idx
+trash/
+.RData
+*.RData
