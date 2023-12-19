@@ -1,15 +1,20 @@
 _scripts = ".." / scripts
 
-rule preprocessMetadata:
+rule annotateALLMetadata:
     input:
-        sampleAnnotation = metadata / "sampleAnnotation.txt",
-        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
-    output:
+        annotatedSampleData = procdata / "annotatedSampleData.qs",
+        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs",
+
+rule annotateTreatmentData:
+    input:
         preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+    output:
+        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs"
     threads:
-        1
+        10
     script:
-        _scripts / "metadata/preprocessMetadata.R"
+        _scripts / "metadata/annotateTreatmentData.R"
+
 
 rule annotateSampleData:
     input:
@@ -53,13 +58,13 @@ rule preprocessCellosaurusData:
         > {log} 2>&1
         """
 
-
-rule annotateTreatmentData:
+rule preprocessMetadata:
     input:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+        sampleAnnotation = metadata / "sampleAnnotation.txt",
+        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
     output:
-        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs"
+        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
     threads:
-        10
+        1
     script:
-        _scripts / "metadata/annotateTreatmentData.R"
+        _scripts / "metadata/preprocessMetadata.R"
