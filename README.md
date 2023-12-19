@@ -1,5 +1,20 @@
 # This is the repository for the CCLE pipeline
 
+This pipeline is considered `End-to-End` and will take you from downloading 
+the raw data needed to a fully annotated dataset.
+
+# Requirements
+- [Snakemake](https://snakemake.readthedocs.io/en/stable/)
+
+
+# Installation
+```bash
+git clone
+cd CCLE
+chmod u+x setup.sh
+./setup.sh
+```
+
 # So far, the following has been implemented:
 ![PIPELINE](resources/dag.svg)
 
