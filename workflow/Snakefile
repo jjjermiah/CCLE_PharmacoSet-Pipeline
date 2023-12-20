@@ -13,11 +13,13 @@ rule build_PharmacoSet:
     input:
         results / "data/ExpressionGenes_SE.qs",
         results / "data/ExpressionTranscripts_SE.qs",
-        procdata / "annotatedSampleData.qs",
-        procdata / "annotatedTreatmentData.qs",
+        procdata / "metadata/annotatedSampleData.qs",
+        procdata / "metadata/annotatedTreatmentData.qs",
+        results / "data/treatmentResponseExperiment.qs",
         rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
         rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
         rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
+
 
 rule make_CNV_SE:
     input:
@@ -47,5 +49,8 @@ rule make_ExpressionTranscripts_SE:
     script:
         scripts / "expression/make_ExpressionTranscripts_SE.R"
 
+
+# All other rules can be found in the rules directory at these locations:
 include: "rules/preprocessData.smk"
 include: "rules/processMetadata.smk"
+include: "rules/processTreatmentResponse.smk"

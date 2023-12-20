@@ -2,14 +2,14 @@ _scripts = ".." / scripts
 
 rule annotateALLMetadata:
     input:
-        annotatedSampleData = procdata / "annotatedSampleData.qs",
-        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs",
+        annotatedSampleData = procdata / "metadata/annotatedSampleData.qs",
+        annotatedTreatmentData = procdata / "metadata/annotatedTreatmentData.qs",
 
 rule annotateTreatmentData:
     input:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
     output:
-        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs"
+        annotatedTreatmentData = procdata / "metadata/annotatedTreatmentData.qs"
     threads:
         10
     script:
@@ -18,9 +18,9 @@ rule annotateTreatmentData:
 
 rule annotateSampleData:
     input:
-        mappedSampleData = procdata / "mappedSampleData.qs"
+        mappedSampleData = procdata / "metadata/mappedSampleData.qs"
     output:
-        annotatedSampleData = procdata / "annotatedSampleData.qs"
+        annotatedSampleData = procdata / "metadata/annotatedSampleData.qs"
     log:
         "logs/metadata/annotateSampleData.log"
     threads:
@@ -32,9 +32,9 @@ rule annotateSampleData:
 
 rule mapSampleNamesToCellosaurusAccessionID:
     input:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
     output:
-        mappedSampleData = procdata / "mappedSampleData.qs"
+        mappedSampleData = procdata / "metadata/mappedSampleData.qs"
     log:
         "logs/metadata/mapSampleNamesToCellosaurusAccessionID.log"
     threads:
@@ -44,7 +44,7 @@ rule mapSampleNamesToCellosaurusAccessionID:
 
 rule preprocessCellosaurusData:
     output:
-        cellosaurusObject = "metadata/cellosaurus.qs",
+        cellosaurusObject = procdata / "metadata/cellosaurus.qs",
     conda:
         "envs/annotationgx.yaml",
     log:
@@ -63,7 +63,7 @@ rule preprocessMetadata:
         sampleAnnotation = metadata / "sampleAnnotation.txt",
         treatmentAnnotation = metadata / "treatmentAnnotation.csv"
     output:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
     threads:
         1
     script:

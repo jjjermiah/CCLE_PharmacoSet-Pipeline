@@ -6,7 +6,7 @@ if(exists("snakemake")){
        
     WILDCARDS <- snakemake@wildcards
     THREADS <- snakemake@threads
-    save.image()
+
 }
 
 
@@ -84,7 +84,7 @@ treatmentMetadata <- merge(
 
 ## 4. Get PubChem Annotations from CIDS
 ## ------------------------------------
-save.image()
+
 
 annotations <- c('ChEMBL ID', 'NSC Number', 'Drug Induced Liver Injury', 'CAS', 'ATC Code')
 

@@ -16,6 +16,12 @@ chmod u+x setup.sh
 ```
 
 # So far, the following has been implemented:
+Create using 
+```bash
+snakemake -s workflow/Snakefile -F --dag | dot -Tsvg
+ > resources/dag.svg
+```
+
 ![PIPELINE](resources/dag.svg)
 
 
