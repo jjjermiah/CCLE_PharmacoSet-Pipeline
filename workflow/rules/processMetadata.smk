@@ -1,9 +1,45 @@
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+HTTP = HTTPRemoteProvider()
+from pathlib import Path
+
+metadataFiles = config["metadata"]
+
+# use _scripts since this file is in the rules directory 
 _scripts = ".." / scripts
 
+# run this rule to download and annotate the metadata ONLY
 rule annotateALLMetadata:
     input:
         annotatedSampleData = procdata / "metadata/annotatedSampleData.qs",
         annotatedTreatmentData = procdata / "metadata/annotatedTreatmentData.qs",
+
+
+rule downloadSampleAnnotation:
+    input:
+        sampleAnnotation = HTTP.remote(metadataFiles["sampleAnnotation"])
+    output:
+        sampleAnnotation = metadata / "sampleAnnotation.txt"
+    shell:
+        "wget -O {output} {input}"
+
+rule downloadTreatmentAnnotation:
+    input:
+        treatmentAnnotation = HTTP.remote(metadataFiles["treatmentAnnotation"])
+    output:
+        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
+    shell:
+        "wget -O {output} {input}"
+
+rule preprocessMetadata:
+    input:
+        sampleAnnotation = metadata / "sampleAnnotation.txt",
+        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
+    output:
+        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
+    threads:
+        1
+    script:
+        _scripts / "metadata/preprocessMetadata.R"
 
 rule annotateTreatmentData:
     input:
@@ -27,8 +63,6 @@ rule annotateSampleData:
         "logs/metadata/annotateSampleData.log"
     threads:
         10
-    retries: 
-        3
     script:
         _scripts / "metadata/annotateSampleData.R"
 
@@ -60,13 +94,3 @@ rule preprocessCellosaurusData:
         > {log} 2>&1
         """
 
-rule preprocessMetadata:
-    input:
-        sampleAnnotation = metadata / "sampleAnnotation.txt",
-        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
-    output:
-        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
-    threads:
-        1
-    script:
-        _scripts / "metadata/preprocessMetadata.R"

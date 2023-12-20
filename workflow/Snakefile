@@ -19,8 +19,7 @@ rule build_PharmacoSet:
         rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
         rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
         rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
-
-
+        
 rule make_CNV_SE:
     input:
         procdata / "preprocessedCNV.qs",
