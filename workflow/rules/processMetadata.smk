@@ -10,6 +10,8 @@ rule annotateTreatmentData:
         preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
     output:
         annotatedTreatmentData = procdata / "metadata/annotatedTreatmentData.qs"
+    log:
+        "logs/metadata/annotateTreatmentData.log"
     threads:
         10
     script:

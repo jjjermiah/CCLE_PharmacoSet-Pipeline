@@ -13,14 +13,13 @@ if(exists("snakemake")){
 library(data.table)
 logger <- log4r::logger(
     appenders = list(
-        log4r::file_appender(LOGFILE, append = TRUE),
-        log4r::console_appender()
+        log4r::file_appender(LOGFILE, append = TRUE)
     )
 )
 
 # Modify the BiocParallel::MulticoreParam to use the logger
 BPPARAM = BiocParallel::MulticoreParam(
-    workers = THREADS, progressbar = TRUE, stop.on.error = FALSE)
+    workers = THREADS, progressbar = FALSE, stop.on.error = FALSE)
 
 # 1.
 log4r::info(logger,"Reading in mapped sample data")
