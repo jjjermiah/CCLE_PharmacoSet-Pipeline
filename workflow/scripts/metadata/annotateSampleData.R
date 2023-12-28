@@ -32,7 +32,7 @@ data <- AnnotationGx::mapCellosaursAccessionsToFields(
     fields = c("id", "ac", "sy", "ca", "sx", "ag", "di", "derived-from-site", "misspelling"),
 )
 
-save.image()
+
 log4r::info(logger,"Finished annotating sample data")
 
 names(data) <- paste0("Cellosaurus.", names(data))
