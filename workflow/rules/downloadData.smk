@@ -3,7 +3,6 @@ import shutil, os
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 HTTP = HTTPRemoteProvider()
 
-include: "downloadMetadata.smk"
 
 expression = config["molecularProfiles"]["expression"]
 mutation = config["molecularProfiles"]["mutation"]

@@ -11,6 +11,15 @@ metadata:
   sampleAnnotation: "https://data.broadinstitute.org/ccle/Cell_lines_annotations_20181226.txt"
   treatmentAnnotation: "https://data.broadinstitute.org/ccle_legacy_data/pharmacological_profiling/CCLE_NP24.2009_profiling_2012.02.20.csv"
 
+treatmentResponse:
+  GNF:
+    description: "GNF drug sensitivity data. NOT USED YET."
+    url: "https://data.broadinstitute.org/ccle_legacy_data/pharmacological_profiling/CCLE_GNF_data_090613.xls"
+  doseResponse:
+    description: "Dose response data"
+    url: "https://data.broadinstitute.org/ccle_legacy_data/pharmacological_profiling/CCLE_NP24.2009_Drug_data_2015.02.24.csv"
+
+
 # Configure Gencode genome parameters
 ccle_gencode_ver: 19
 gencode_reference: GRCh37

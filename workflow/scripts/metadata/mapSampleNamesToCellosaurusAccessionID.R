@@ -6,15 +6,14 @@ if(exists("snakemake")){
     WILDCARDS <- snakemake@wildcards
     THREADS <- snakemake@threads
     LOGFILE <- snakemake@log[[1]]
-    save.image()
+
 }
 library(data.table)
 
 # set up logging
 logger <- log4r::logger(
     appenders = list(
-        log4r::file_appender(LOGFILE, append = TRUE),
-        log4r::console_appender()
+        log4r::file_appender(LOGFILE, append = TRUE)
     )
 )
 # 1. 

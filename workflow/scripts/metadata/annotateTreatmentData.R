@@ -6,19 +6,21 @@ if(exists("snakemake")){
        
     WILDCARDS <- snakemake@wildcards
     THREADS <- snakemake@threads
-    save.image()
+    LOGFILE <- snakemake@log[[1]]
 }
-
+# set up logging
+logger <- log4r::logger(
+    appenders = list(
+        log4r::file_appender(LOGFILE, append = TRUE)
+    )
+)
 
 treatmentMetadata <- data.table::as.data.table(qs::qread(INPUT[[1]])$treatment)
-
-
-BPPARAM = BiocParallel::MulticoreParam(workers = THREADS, progressbar = TRUE, stop.on.error = FALSE)
-
+BPPARAM = BiocParallel::MulticoreParam(workers = THREADS, progressbar = FALSE, stop.on.error = FALSE)
 
 ## 1. Get PubChem CIDs for all treatment names
 ## -------------------------------------------
-message("Getting PubChem CIDs from all treatment names")
+log4r::info(logger,"Getting PubChem CIDs from all treatment names")
 
 getCID <- function(names){
     AnnotationGx::getPubChemCompound(
@@ -46,13 +48,13 @@ treatmentMetadata <- merge(
 
 
 if(length(treatmentMetadata[is.na(treatmentMetadata$PubChem.CID), CCLE.cleanedTreatmentName]) > 0){
-    message("WARNING: Some PubChem CIDs could not be found:")
-    message(treatmentMetadata[is.na(PubChem.CID), CCLE.cleanedTreatmentName])
+    log4r::warning(logger,"WARNING: Some PubChem CIDs could not be found:")
+    log4r::warning(logger,treatmentMetadata[is.na(PubChem.CID), CCLE.cleanedTreatmentName])
 }
 
 ## 2. Get PubChem Properties from CIDS
 ## -----------------------------------
-message("Getting PubChem Properties from CIDS")
+log4r::info(logger,"Getting PubChem Properties from CIDS")
 propertiesFromCID <- 
     AnnotationGx::getPubChemCompound(
         treatmentMetadata[, PubChem.CID], 
@@ -84,7 +86,7 @@ treatmentMetadata <- merge(
 
 ## 4. Get PubChem Annotations from CIDS
 ## ------------------------------------
-save.image()
+
 
 annotations <- c('ChEMBL ID', 'NSC Number', 'Drug Induced Liver Injury', 'CAS', 'ATC Code')
 
@@ -105,13 +107,13 @@ getPubChemAnnotationsMultipleCID <- function(CIDs, annotations, dropCID = FALSE)
 }
 
 
-message("Getting External PubChem Annotations from CIDS")
+log4r::info(logger,"Getting External PubChem Annotations from CIDS")
 treatmentMetadata[, paste0("PubChem.", make.names(annotations)) := 
     getPubChemAnnotationsMultipleCID(PubChem.CID, annotations, TRUE)]
 
 # 5. Get ChEMBL Mechanism from ChEMBL ID
 # --------------------------------------
-message("Getting ChEMBL Mechanism from ChEMBL ID")
+log4r::info(logger,"Getting ChEMBL Mechanism from ChEMBL ID")
 x <- AnnotationGx::getChemblMechanism(treatmentMetadata$"PubChem.ChEMBL.ID")[!duplicated(`Molecule Chembl ID`),]
 names(x) <- paste0("ChEMBL.", make.names(names(x)))
 

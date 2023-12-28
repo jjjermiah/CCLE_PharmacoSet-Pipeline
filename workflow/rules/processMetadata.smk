@@ -1,15 +1,53 @@
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+HTTP = HTTPRemoteProvider()
+from pathlib import Path
+
+metadataFiles = config["metadata"]
+
+# use _scripts since this file is in the rules directory 
 _scripts = ".." / scripts
 
+# run this rule to download and annotate the metadata ONLY
 rule annotateALLMetadata:
     input:
-        annotatedSampleData = procdata / "annotatedSampleData.qs",
-        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs",
+        annotatedSampleData = procdata / "metadata/annotatedSampleData.qs",
+        annotatedTreatmentData = procdata / "metadata/annotatedTreatmentData.qs",
+
+
+rule downloadSampleAnnotation:
+    input:
+        sampleAnnotation = HTTP.remote(metadataFiles["sampleAnnotation"])
+    output:
+        sampleAnnotation = metadata / "sampleAnnotation.txt"
+    shell:
+        "wget -O {output} {input}"
+
+rule downloadTreatmentAnnotation:
+    input:
+        treatmentAnnotation = HTTP.remote(metadataFiles["treatmentAnnotation"])
+    output:
+        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
+    shell:
+        "wget -O {output} {input}"
+
+rule preprocessMetadata:
+    input:
+        sampleAnnotation = metadata / "sampleAnnotation.txt",
+        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
+    output:
+        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
+    threads:
+        1
+    script:
+        _scripts / "metadata/preprocessMetadata.R"
 
 rule annotateTreatmentData:
     input:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
     output:
-        annotatedTreatmentData = procdata / "annotatedTreatmentData.qs"
+        annotatedTreatmentData = procdata / "metadata/annotatedTreatmentData.qs"
+    log:
+        "logs/metadata/annotateTreatmentData.log"
     threads:
         10
     script:
@@ -18,23 +56,21 @@ rule annotateTreatmentData:
 
 rule annotateSampleData:
     input:
-        mappedSampleData = procdata / "mappedSampleData.qs"
+        mappedSampleData = procdata / "metadata/mappedSampleData.qs"
     output:
-        annotatedSampleData = procdata / "annotatedSampleData.qs"
+        annotatedSampleData = procdata / "metadata/annotatedSampleData.qs"
     log:
         "logs/metadata/annotateSampleData.log"
     threads:
         10
-    retries: 
-        3
     script:
         _scripts / "metadata/annotateSampleData.R"
 
 rule mapSampleNamesToCellosaurusAccessionID:
     input:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
+        preprocessedMetadata = procdata / "metadata/preprocessedMetadata.qs"
     output:
-        mappedSampleData = procdata / "mappedSampleData.qs"
+        mappedSampleData = procdata / "metadata/mappedSampleData.qs"
     log:
         "logs/metadata/mapSampleNamesToCellosaurusAccessionID.log"
     threads:
@@ -44,7 +80,7 @@ rule mapSampleNamesToCellosaurusAccessionID:
 
 rule preprocessCellosaurusData:
     output:
-        cellosaurusObject = "metadata/cellosaurus.qs",
+        cellosaurusObject = procdata / "metadata/cellosaurus.qs",
     conda:
         "envs/annotationgx.yaml",
     log:
@@ -58,13 +94,3 @@ rule preprocessCellosaurusData:
         > {log} 2>&1
         """
 
-rule preprocessMetadata:
-    input:
-        sampleAnnotation = metadata / "sampleAnnotation.txt",
-        treatmentAnnotation = metadata / "treatmentAnnotation.csv"
-    output:
-        preprocessedMetadata = procdata / "preprocessedMetadata.qs"
-    threads:
-        1
-    script:
-        _scripts / "metadata/preprocessMetadata.R"

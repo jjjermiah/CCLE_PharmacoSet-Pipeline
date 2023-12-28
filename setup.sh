@@ -14,4 +14,4 @@
 # conda activate CCLE_snakemake
 
 
-Rscript -e 'remotes::install_github("bhklab/AnnotationGx", build_manual=TRUE, build_vignettes=TRUE)'
+Rscript -e 'remotes::install_github("bhklab/AnnotationGx", build_manual=FALSE, build_vignettes=FALSE)'

@@ -5,7 +5,7 @@ if(exists("snakemake")){
        
     WILDCARDS <- snakemake@wildcards
     THREADS <- snakemake@threads
-    save.image()
+
 }
 
 library(data.table)
