@@ -7,7 +7,6 @@ if(exists("snakemake")){
 
     # TODO:: FIX THIS
     DATASET_GENCODE_VERSION <- 19
-    save.image()
 }
 
 data <- qs::qread(INPUT$preprocessedExpression, nthreads = THREADS)
@@ -29,7 +28,9 @@ rseGenes_tpm <- SummarizedExperiment::SummarizedExperiment(
     assays = list(genes.tpm = tpmMatrix),
     rowRanges = gene_rRanges,
     colData = data.table::data.table(
-        sample.id = colnames(tpmMatrix)
+        sampleid = colnames(tpmMatrix),
+        # make a column called batchid that is full of NAs
+        batchid = rep(NA, ncol(tpmMatrix))
     ),
     metadata = data.table::data.table(
         dataset.gencode.version = DATASET_GENCODE_VERSION
