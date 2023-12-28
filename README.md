@@ -3,6 +3,10 @@
 This pipeline is considered `End-to-End` and will take you from downloading 
 the raw data needed to a fully annotated dataset.
 
+Current PSet status:
+- need to annotate Mutation and Methylation experiments data
+![PSet Display](resources/status-2023-12-28.png)
+
 # Requirements
 - [Snakemake](https://snakemake.readthedocs.io/en/stable/)
 
