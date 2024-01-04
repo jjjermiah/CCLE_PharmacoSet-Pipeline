@@ -11,14 +11,15 @@ scripts = Path(config["scriptsDir"])
 
 rule build_PharmacoSet:
     input:
-        results / "data/ExpressionGenes_SE.qs",
-        results / "data/ExpressionTranscripts_SE.qs",
-        procdata / "metadata/annotatedSampleData.qs",
-        procdata / "metadata/annotatedTreatmentData.qs",
-        results / "data/treatmentResponseExperiment.qs",
         rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
         rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
-        rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
+        sampleInfo = procdata / "metadata/annotatedSampleData.qs",
+        treatmentInfo = procdata / "metadata/annotatedTreatmentData.qs",
+        gene_se = results / "data/ExpressionGenes_SE.qs",
+        transcript_se = results / "data/ExpressionTranscripts_SE.qs",
+        cnv_se = results / "data/CNV_SE.qs",
+        treatmentResponseExperiment = results / "data/treatmentResponseExperiment.qs",
+        # methylation_se = results / "data/Methylation_SE.qs",
     output:
         results / "data/CCLE_PSet.qs"
     log:
@@ -28,14 +29,6 @@ rule build_PharmacoSet:
     script:
         scripts / "build_PharmacoSet.R"
 
-rule make_CNV_SE:
-    input:
-        procdata / "preprocessedCNV.qs",
-    output:
-        results / "data/CNV_SE.qs"
-    script:
-        scripts / "expression/make_ExpressionCNV_SE.R"
-    
 rule make_ExpressionGenes_SE:
     input:
         preprocessedExpression = procdata / "preprocessedExpressionGenes.qs",

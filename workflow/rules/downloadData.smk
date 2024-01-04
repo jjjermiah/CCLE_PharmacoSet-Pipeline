@@ -10,15 +10,28 @@ cnv = config["molecularProfiles"]["cnv"]
 SNPArrays = config["molecularProfiles"]["cnv"]["SNParrays"]
 methylation = config["molecularProfiles"]["methylation"]
 
+logs = Path("logs")
+
+
+
 rule downloadExpression:
     input:
         genes_rsem = HTTP.remote(expression["rsem-genes_tpm"]["url"]),
         transcripts_rsem = HTTP.remote(expression["rsem-transcripts_tpm"]["url"]),
+        genes_counts = HTTP.remote(expression["genes_counts"]["url"]), 
     output:
         genes_tpm=rawdata / "expression/CCLE_RNAseq_rsem_genes_tpm_20180929.txt",
         transcripts_tpm=rawdata / "expression/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt",
+        genes_counts=rawdata / "expression/CCLE_RNAseq_genes_counts_20180929.gct.gz",
+    log:
+        logs / "expression/download.log"
     shell:
-        "gunzip {input.genes_rsem} -c > {output.genes_tpm} && gunzip {input.transcripts_rsem} -c > {output.transcripts_tpm}"
+        # "gunzip {input.genes_rsem} -c > {output.genes_tpm} && gunzip {input.transcripts_rsem} -c > {output.transcripts_tpm}"
+        """
+        gunzip {input.genes_rsem} -c > {output.genes_tpm} && \
+        gunzip {input.transcripts_rsem} -c > {output.transcripts_tpm} && \
+        mv {input.genes_counts} {output.genes_counts} > {log} 2>&1
+        """
 
 rule downloadMutation:
     input:
@@ -34,9 +47,11 @@ rule downloadMethylation:
     input:
         methylation = HTTP.remote(methylation["RBBS_TSS1kb"]["url"]),
     output:
-        methylation=rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt.gz",
+        methylation=rawdata / "methylation/CCLE_RRBS_TSS1kb_20181022.txt",
     shell:
-        "mv {input.methylation} {output.methylation}"
+        """
+        gunzip {input.methylation} -c > {output.methylation}
+        """
 
 
 rule downloadCNV:
@@ -53,7 +68,7 @@ rule downloadSNPArrays:
     output:
         arrays=[
             rawdata / "cnv/snpArrays/{}".format(Path(SNPArrays[url]).name) 
-                for url in SNPArrays.keys() if url.  startswith("url")]
+                for url in SNPArrays.keys() if url.startswith("url")]
     run:
         for i in range(len(input.arrays)):
             shutil.move(input.arrays[i], output.arrays[i])

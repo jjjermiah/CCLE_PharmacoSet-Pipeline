@@ -29,11 +29,9 @@ molecularProfiles:
     rsem-genes_tpm: 
       description: "RNA-seq gene expression data. TPM values are log2 transformed."
       url: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz"
-
     rsem-transcripts_tpm: 
       description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz"
-
     genes_counts: 
       description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle/CCLE_RNAseq_genes_counts_20180929.gct.gz"
@@ -42,7 +40,6 @@ molecularProfiles:
     oncomapAssay: 
       description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle_legacy_data/oncomap_mutations/CCLE_Oncomap3_Assays_2012-04-09.csv"
-
     oncomap: 
       description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle_legacy_data/oncomap_mutations/CCLE_Oncomap3_2012-04-09.maf"
@@ -67,4 +64,3 @@ molecularProfiles:
       annotation:
         description: "Annotations correspond to hg18 (NCBI 36.1)"
         bioconductorPackage: "pd.genomewidesnp.6"
-  

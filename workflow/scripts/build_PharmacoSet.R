@@ -17,21 +17,35 @@ treatment <- qs::qread("procdata/metadata/annotatedTreatmentData.qs")
 sample <- qs::qread("procdata/metadata/annotatedSampleData.qs")
 sample[, sampleid := CCLE.sampleID]
 sample <- sample[!duplicated(sampleid),]
+
 # read in RangedSummarizedExperiment objects
-transcripts_SE <- qs::qread("results/data/ExpressionTranscripts_SE.qs")
-genes_SE <- qs::qread("results/data/ExpressionGenes_SE.qs")
+transcripts_SE <- qs::qread(INPUT$transcript_se)
+genes_SE <- qs::qread(INPUT$gene_se)
+cnv_SE <- qs::qread(INPUT$cnv_se)
 
-# convert both to a MultiAssayExperiment
+# drop all rows in sample where sampleid is not in transcripts_SE
+sample <- sample[sampleid %in% colData(transcripts_SE)$sampleid,]
 
-colData <- unique(rbind(
-    colData(transcripts_SE),
-    colData(genes_SE)))
+# remove all samples in cnv_SE that are not in genes_SE
+cnv_SE <- cnv_SE[, colData(cnv_SE)$sampleid %in% sample$sampleid]
+
+# convert sample into a dataframe with the sampleid column as rownames
+sample <- as.data.frame(sample)
+rownames(sample) <- sample$sampleid
 
 
 # create a MultiAssayExperiment object
+
+colData <- unique(rbind(
+    colData(transcripts_SE),
+    colData(genes_SE),
+    colData(cnv_SE)))
+
+
 ExpList <- MultiAssayExperiment::ExperimentList(list(
     rnaseq.transcripts = transcripts_SE, 
-    rnaseq.genes = genes_SE)
+    rnaseq.genes = genes_SE,
+    cnv.genes = cnv_SE)
 )
 
 transcripts_map <- data.frame(
@@ -44,9 +58,15 @@ genes_map <- data.frame(
     colname = colData$sampleid,
     stringsAsFactors = FALSE)
 
+cnv_map <- data.frame(
+    primary = colData$sampleid,
+    colname = colData$sampleid,
+    stringsAsFactors = FALSE)
+
 sampleMap <- listToMap(list(
     rnaseq.transcripts = transcripts_map,
-    rnaseq.genes = genes_map))
+    rnaseq.genes = genes_map,
+    cnv.genes = cnv_map))
 
 mae <- MultiAssayExperiment(
     experiments = ExpList,
@@ -57,14 +77,15 @@ mae <- MultiAssayExperiment(
 # read in drug response data
 tre <- qs::qread("results/data/treatmentResponseExperiment.qs")
 
-
-
-
-PharmacoGx::PharmacoSet2(
+pset <- PharmacoGx::PharmacoSet2(
     name = "CCLE",
     treatment = treatment,
     sample = sample,
     molecularProfiles = mae, 
     treatmentResponse = tre,
-    curation = list(sample = data.frame(), treatment = data.frame(), tissue = data.frame())
+    curation = list(sample = as.data.frame(sample), treatment = data.frame(), tissue = data.frame())
 )
+
+pset 
+
+
