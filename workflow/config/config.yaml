@@ -43,6 +43,9 @@ molecularProfiles:
     oncomap: 
       description: TODO::(add description)
       url: "https://data.broadinstitute.org/ccle_legacy_data/oncomap_mutations/CCLE_Oncomap3_2012-04-09.maf"
+    hybridCapture:
+      description: TODO::(add description)
+      url: "https://data.broadinstitute.org/ccle_legacy_data/hybrid_capture_sequencing/CCLE_hybrid_capture1650_hg19_NoCommonSNPs_NoNeutralVariants_CDS_2012.05.07.maf"
 
   methylation:
     RBBS_TSS1kb:

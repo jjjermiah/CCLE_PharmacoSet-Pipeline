@@ -11,43 +11,23 @@ scripts = Path(config["scriptsDir"])
 
 rule build_PharmacoSet:
     input:
-        rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
-        rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
         sampleInfo = procdata / "metadata/annotatedSampleData.qs",
         treatmentInfo = procdata / "metadata/annotatedTreatmentData.qs",
         gene_se = results / "data/ExpressionGenes_SE.qs",
         transcript_se = results / "data/ExpressionTranscripts_SE.qs",
         cnv_se = results / "data/CNV_SE.qs",
+        mutation_se = results / "data/Mutation_SE.qs",
         treatmentResponseExperiment = results / "data/treatmentResponseExperiment.qs",
         # methylation_se = results / "data/Methylation_SE.qs",
     output:
-        results / "data/CCLE_PSet.qs"
+        pset_rds = results / "data/CCLE_PSet.rds",
+        pset_qs = results / "data/CCLE_PSet.qs"
     log:
         "logs/build_PharmacoSet.log"
     threads:
         4
     script:
         scripts / "build_PharmacoSet.R"
-
-rule make_ExpressionGenes_SE:
-    input:
-        preprocessedExpression = procdata / "preprocessedExpressionGenes.qs",
-    output:
-        processedExpressionGenesSE = results / "data/ExpressionGenes_SE.qs"
-    threads:
-        4
-    script:
-        scripts / "expression/make_ExpressionGenes_SE.R"
-
-rule make_ExpressionTranscripts_SE:
-    input:
-        preprocessedExpression = procdata / "preprocessedExpressionTranscripts.qs",
-    output:
-        processedExpressionTranscriptsSE = results / "data/ExpressionTranscripts_SE.qs"
-    threads:
-        4
-    script:
-        scripts / "expression/make_ExpressionTranscripts_SE.R"
 
 
 # All other rules can be found in the rules directory at these locations:

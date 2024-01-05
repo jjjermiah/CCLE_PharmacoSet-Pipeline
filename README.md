@@ -5,7 +5,7 @@ the raw data needed to a fully annotated dataset.
 
 Current PSet status:
 - need to annotate Mutation and Methylation experiments data
-![PSet Display](resources/status-2023-12-28.png)
+![PSet Display](resources/status-2024-01-05.png)
 
 # Requirements
 - [Snakemake](https://snakemake.readthedocs.io/en/stable/)

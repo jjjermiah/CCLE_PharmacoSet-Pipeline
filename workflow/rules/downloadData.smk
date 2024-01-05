@@ -37,11 +37,17 @@ rule downloadMutation:
     input:
         oncomapAssay = HTTP.remote(mutation["oncomapAssay"]["url"]),
         oncomap = HTTP.remote(mutation["oncomap"]["url"]),
+        hybridCapture = HTTP.remote(mutation["hybridCapture"]["url"]),
     output:
         oncomapAssay=rawdata / "mutation/CCLE_Oncomap3_Assays_2012-04-09.csv",
         oncomap=rawdata / "mutation/CCLE_Oncomap3_2012-04-09.maf",
+        hybridCapture=rawdata / "mutation/CCLE_hybrid_capture1650_hg19_NoCommonSNPs_NoNeutralVariants_CDS_2012.05.07.maf",
     shell:
-        "mv {input.oncomapAssay} {output.oncomapAssay} && mv {input.oncomap} {output.oncomap}"
+        """
+        mv {input.oncomapAssay} {output.oncomapAssay} && \
+        mv {input.oncomap} {output.oncomap} && \
+        mv {input.hybridCapture} {output.hybridCapture}
+        """
 
 rule downloadMethylation:
     input:
